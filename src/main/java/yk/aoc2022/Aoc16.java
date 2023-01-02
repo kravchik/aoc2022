@@ -19,14 +19,19 @@ import static yk.jcommon.collections.YHashSet.hs;
  */
 public class Aoc16 {
 
-    public static void main(String[] args) {
+    @Test
+    public void answer1() {
         YMap<String, Valve> net = readNet(IO.readFile("src/main/java/yk/aoc2022/" + "aoc16.txt"));
         fillPassages(net);
-
         System.out.println(net.toString("\n"));
-
         assertEquals(2124f, findBestState(net, al(new Actor(net.get("AA"), 0))).totalFlow);
+    }
 
+    @Test
+    public void answer2() {
+        YMap<String, Valve> net = readNet(IO.readFile("src/main/java/yk/aoc2022/" + "aoc16.txt"));
+        fillPassages(net);
+        System.out.println(net.toString("\n"));
         assertEquals(2775f, findBestState(net, al(new Actor(net.get("AA"), 4), new Actor(net.get("AA"), 4))).totalFlow);
     }
 
@@ -60,35 +65,27 @@ public class Aoc16 {
         initial.actors = actors;
         YList<State16> edge = al(initial);
 
-        YMap<YMap<String, Boolean>, Float> bestStates = hm();
+        YMap<YMap<String, Boolean>, Float> seen = hm();
         State16 best = null;
         System.out.println(initial);
         for (int i = 0; i < 100000000; i++) {
             if (edge.isEmpty()) break;
             State16 cur = edge.remove(edge.size() - 1);
+            if (best == null || best.totalFlow < cur.totalFlow) {
+                best = cur;
+                System.out.println("New best: " + best);
+            }
 
-            //int selectedActor = cur.actors.indexOf(cur.actors.min(a -> a.atMinute));
-            YList<State16> newStates = al();
-            for (int selectedActor = 0; selectedActor < cur.actors.size(); selectedActor++) {
-                int finalSelectedActor = selectedActor;
-                newStates.addAll(cur.actors.get(selectedActor).atValve.passes
+            YList<State16> newStates = cur.actors
+                    .mapWithIndex((selectedActor, actor) -> actor.atValve.passes
                         .filter((k, v) -> !cur.state.get(k))
                         .filter((k, v) -> net.get(k).rate > 0)
-                        .mapToList((p, len) -> cur.moveAndOpen(finalSelectedActor, net.get(p), len))
-                        .filter(s -> bestStates.getOrDefault(s.state, 0f) < s.totalFlow)
-                        .filter(s -> s.actors.get(finalSelectedActor).atMinute < 30));
-            }
-            if (newStates.isEmpty()) {
-                if (best == null || best.totalFlow < cur.totalFlow) {
-                    best = cur;
-                    System.out.println("New best: " + best);
-                }
-            } else {
-                for (State16 state : newStates) bestStates.put(state.state, state.totalFlow);
-                edge.addAll(newStates);
-                edge = edge.withAll(newStates).sorted(
-                        e -> e.totalFlow - e.actors.reduce(0, (sum, a) -> sum + a.atMinute) * 100);
-            }
+                        .mapToList((p, len) -> cur.moveAndOpen(selectedActor, net.get(p), len))
+                        .filter(s -> s.actors.get(selectedActor).atMinute < 30)
+                        .filter(s -> seen.getOrDefault(s.state, 0f) < s.totalFlow)
+                        .forThis(t -> t.forEach(s -> seen.put(s.state, s.totalFlow))))
+                    .flatMap(p -> p);
+            edge = edge.withAll(newStates).sorted(e -> e.totalFlow);
         }
         return best;
     }
