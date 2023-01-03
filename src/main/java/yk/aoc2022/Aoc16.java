@@ -65,7 +65,7 @@ public class Aoc16 {
         initial.actors = actors;
         YList<State16> edge = al(initial);
 
-        YMap<YMap<String, Boolean>, Float> seen = hm();
+        YMap<YMap<String, Boolean>, Float> bestByState = hm();
         State16 best = null;
         System.out.println(initial);
         for (int i = 0; i < 100000000; i++) {
@@ -73,21 +73,31 @@ public class Aoc16 {
             State16 cur = edge.remove(edge.size() - 1);
             if (best == null || best.totalFlow < cur.totalFlow) {
                 best = cur;
-                System.out.println("New best: " + best);
+                System.out.println("New best: " + best.totalFlow + " " + best);
             }
-
+            State16 finalBest = best;
             YList<State16> newStates = cur.actors
                     .mapWithIndex((selectedActor, actor) -> actor.atValve.passes
                         .filter((k, v) -> !cur.state.get(k))
                         .filter((k, v) -> net.get(k).rate > 0)
                         .mapToList((p, len) -> cur.moveAndOpen(selectedActor, net.get(p), len))
                         .filter(s -> s.actors.get(selectedActor).atMinute < 30)
-                        .filter(s -> seen.getOrDefault(s.state, 0f) < s.totalFlow)
-                        .forThis(t -> t.forEach(s -> seen.put(s.state, s.totalFlow))))
+                        .filter(s -> isPossiblyBetter(net, finalBest, s))
+                        .filter(s -> bestByState.getOrDefault(s.state, 0f) < s.totalFlow)
+                        .forThis(t -> t.forEach(s -> bestByState.put(s.state, s.totalFlow))))
                     .flatMap(p -> p);
             edge = edge.withAll(newStates).sorted(e -> e.totalFlow);
         }
         return best;
+    }
+
+    private static boolean isPossiblyBetter(YMap<String, Valve> net, State16 curBest, State16 state) {
+        return state.state
+                .filter((k, v) -> !v)
+                .mapToList((k, v) -> net.get(k))
+                .reduce(0f, (sum, v) -> sum + v.rate)
+                * (30 - state.actors.map(a -> a.atMinute).min()) + state.totalFlow
+                > curBest.totalFlow;
     }
 
     private static YMap<String, Valve> readNet(String lines) {
