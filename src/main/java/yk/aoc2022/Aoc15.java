@@ -18,14 +18,16 @@ import static yk.jcommon.fastgeom.Vec2i.v2i;
  */
 public class Aoc15 {
 
-    //116454520000002855041 is too high
-    public static void main(String[] args) {
+    @Test
+    public void answer1() {
         YList<Tuple<YList<Vec2i>, Integer>> data = readData("src/main/java/yk/aoc2022/aoc15.txt");
-        System.out.println(data.toString("\n"));
-        int atY = 2000000;
-        Vec2i range = rangesReduceFun(rangesForLine(data, atY)).assertSize(1).first();
+        Vec2i range = rangesReduceFun(rangesForLine(data, 2000000)).assertSize(1).first();
         assertEquals(4876693, range.y - range.x);
+    }
 
+    @Test
+    public void answer2() {
+        YList<Tuple<YList<Vec2i>, Integer>> data = readData("src/main/java/yk/aoc2022/aoc15.txt");
         Vec2i distress = findDistress(data, 4_000_000);
         assertEquals(11645454855041L, distress.x * 4_000_000L + distress.y);
     }
@@ -67,8 +69,7 @@ public class Aoc15 {
     public static YList<Vec2i> rangesForLine(YList<Tuple<YList<Vec2i>, Integer>> sensors, int atY) {
         return sensors.map(s -> {
             Vec2i sensor = s.a.first();
-            Integer r = s.b;
-            int dx = r - abs(atY - sensor.y);
+            int dx = s.b - abs(atY - sensor.y);
             if (dx < 0) return null;
             return v2i(sensor.x, sensor.x).add(-dx, dx);
 
