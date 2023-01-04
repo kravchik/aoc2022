@@ -95,9 +95,9 @@ public class Aoc16 {
         return state.state
                 .filter((k, v) -> !v)
                 .mapToList((k, v) -> net.get(k))
-                .reduce(0f, (sum, v) -> sum + v.rate)
-                * (30 - state.actors.map(a -> a.atMinute).min()) + state.totalFlow
-                > curBest.totalFlow;
+                .map(v -> v.rate * (30 - state.actors.map(a -> a.atMinute + a.atValve.passes.getOr(v.name, 0) + 1).min()))
+                .filter(a -> a > 0)
+                .reduce(0f, (i, j) -> i + j) + state.totalFlow > curBest.totalFlow;
     }
 
     private static YMap<String, Valve> readNet(String lines) {

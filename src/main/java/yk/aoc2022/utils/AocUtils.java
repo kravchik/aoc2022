@@ -21,7 +21,8 @@ import static yk.jcommon.fastgeom.Vec2i.v2i;
  */
 public class AocUtils {
 
-    public static final BiFunction<Integer, Integer, Integer> INT_SUM = (i1, j) -> i1 + j;
+    public static final BiFunction<Integer, Integer, Integer> INT_SUM = (i, j) -> i + j;
+    public static final BiFunction<Float, Float, Float> FLOAT_SUM = (i, j) -> i + j;
 
     public static final YList<Vec2i> DIRS = al(v2i(1, 0), v2i(0, 1), v2i(-1, 0), v2i(0, -1));
     public static final YList<Character> DIR_SYMBOLS = al('>', 'v', '<', '^');
