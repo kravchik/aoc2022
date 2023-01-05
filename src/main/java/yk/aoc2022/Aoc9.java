@@ -6,7 +6,7 @@ import yk.jcommon.utils.IO;
 import yk.jcommon.utils.MyMath;
 
 import static org.junit.Assert.assertEquals;
-import static yk.aoc2022.utils.AocUtils.INT_SUM;
+import static yk.aoc2022.utils.AocUtils.INT_ADD;
 import static yk.jcommon.collections.YArrayList.al;
 import static yk.jcommon.collections.YHashMap.hm;
 import static yk.jcommon.collections.YHashSet.hs;
@@ -51,7 +51,7 @@ public class Aoc9 {
                 head = head.zipWith(dir, (a, b) -> a + b);
 
                 tail = tail.reduce(al(head), (h, t) -> {
-                    Integer dist = t.zipWith(h.last(), (a, b) -> (int) abs(b - a)).reduce(INT_SUM);
+                    Integer dist = t.zipWith(h.last(), (a, b) -> (int) abs(b - a)).reduce(INT_ADD);
                     t = t.zipWith(h.last(), (a, b) -> a + MyMath.clamp(dist > 2 ? (b - a) : (int)((b - a)*0.5f), 1));
                     return h.with(t);
                 }).cdr();

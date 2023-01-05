@@ -6,7 +6,7 @@ import yk.jcommon.utils.IO;
 import yk.lang.yads.Yads;
 
 import static org.junit.Assert.assertEquals;
-import static yk.aoc2022.utils.AocUtils.INT_SUM;
+import static yk.aoc2022.utils.AocUtils.INT_ADD;
 import static yk.jcommon.collections.YArrayList.al;
 
 /**
@@ -48,7 +48,7 @@ public class Aoc13 {
         return pares
                 .map(p -> comparePackets(p.first(), p.last()))
                 .mapWithIndex((i, r) -> r < 1 ? i + 1 : 0)
-                .reduce(INT_SUM);
+                .reduce(INT_ADD);
     }
 
     private static YList<YList<Object>> readPares(final String fileName) {

@@ -7,7 +7,7 @@ import yk.jcommon.collections.YList;
 import yk.jcommon.utils.IO;
 
 import static org.junit.Assert.assertEquals;
-import static yk.aoc2022.utils.AocUtils.INT_SUM;
+import static yk.aoc2022.utils.AocUtils.INT_ADD;
 import static yk.jcommon.collections.YArrayList.al;
 
 /**
@@ -36,7 +36,7 @@ public class Aoc8 {
 
         YList<YList<Integer>> visible = getVisibility(surface);
         System.out.println(surface.toString("\n"));
-        System.out.println("Visible: " + visible.map(l -> l.reduce(INT_SUM)).reduce(INT_SUM));
+        System.out.println("Visible: " + visible.map(l -> l.reduce(INT_ADD)).reduce(INT_ADD));
         System.out.println(visible.toString("\n"));
 
         assertEquals(21, calcVisible(visible));
@@ -53,7 +53,7 @@ public class Aoc8 {
     }
 
     private static int calcVisible(YList<YList<Integer>> visible) {
-        return visible.map(l -> l.reduce(INT_SUM)).reduce(INT_SUM);
+        return visible.map(l -> l.reduce(INT_ADD)).reduce(INT_ADD);
     }
 
     private static YList<YList<Integer>> getVisibility(YList<YList<Integer>> surface) {
